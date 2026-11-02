@@ -1,0 +1,103 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+  <meta charset="UTF-8">
+  <title>순회점검 일지 작성기</title>
+  <link rel="stylesheet" href="./style.css">
+</head>
+<body>
+
+  <!-- 1. 공통 상단 메뉴 자리 -->
+  <div id="common-nav"></div>
+
+  <!-- 2. 상단 조작 버튼 바 (인쇄 시 숨겨짐) -->
+  <div class="toolbar no-print">
+    <span>💡 <strong>안내:</strong> 표 안의 내용을 클릭해 바로 수정하세요. (자동 저장됨)</span>
+    <div>
+      <button onclick="addRow()">+ 점검항목 추가</button>
+      <button onclick="window.print()">🖨️ A4 인쇄 / PDF 저장</button>
+      <button class="reset-btn" onclick="resetDoc()">초기화</button>
+    </div>
+  </div>
+
+  <!-- 3. A4 인쇄 영역 (이 안의 표만 서식에 맞게 바꾸면 됩니다) -->
+  <div class="a4-page" id="document-area">
+    <h1 contenteditable="true">작업장 순회점검 일지</h1>
+
+    <table>
+      <tr>
+        <th>점검 일자</th>
+        <td contenteditable="true">2026년 11월 02일</td>
+        <th>점검자</th>
+        <td contenteditable="true">안전관리자 홍길동 (인)</td>
+      </tr>
+      <tr>
+        <th>점검 구역</th>
+        <td colspan="3" contenteditable="true">현장 전 구역 및 협력사 작업 구간</td>
+      </tr>
+    </table>
+
+    <table id="item-table">
+      <thead>
+        <tr>
+          <th style="width: 25%;">점검 장소 / 공종</th>
+          <th style="width: 40%;">점검 내용 및 지적사항</th>
+          <th style="width: 20%;">개선 조치 대책</th>
+          <th style="width: 15%;">조치 결과</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr>
+          <td contenteditable="true">배관 설치 구간</td>
+          <td contenteditable="true">통로 구간 자재 적치로 보행 간섭 발생</td>
+          <td contenteditable="true">자재 지정 구역 이동 및 통로 확보</td>
+          <td contenteditable="true" style="text-align:center;">조치완료</td>
+        </tr>
+        <tr>
+          <td contenteditable="true">전기 분전반 주변</td>
+          <td contenteditable="true">분전반 앞 소화기 비치 및 잠금 상태 확인</td>
+          <td contenteditable="true">특이사항 없음 (양호)</td>
+          <td contenteditable="true" style="text-align:center;">양호</td>
+        </tr>
+      </tbody>
+    </table>
+  </div>
+
+  <!-- 4. 공통 메뉴 및 자동 저장 스크립트 -->
+  <script src="./menu.js"></script>
+  <script>
+    const docArea = document.getElementById('document-area');
+    // ★ 서식 파일마다 이 키 이름을 고유하게 지정하세요! (예: doc_tbm, doc_inspect, doc_plan)
+    const STORAGE_KEY = 'safe_portal_doc_inspect';
+
+    window.addEventListener('DOMContentLoaded', () => {
+      const saved = localStorage.getItem(STORAGE_KEY);
+      if (saved) docArea.innerHTML = saved;
+    });
+
+    docArea.addEventListener('input', () => {
+      localStorage.setItem(STORAGE_KEY, docArea.innerHTML);
+    });
+
+    function addRow() {
+      const tbody = document.querySelector('#item-table tbody');
+      const tr = document.createElement('tr');
+      tr.innerHTML = `
+        <td contenteditable="true">장소 입력</td>
+        <td contenteditable="true">점검 내용 입력</td>
+        <td contenteditable="true">조치 대책 입력</td>
+        <td contenteditable="true" style="text-align:center;">양호</td>
+      `;
+      tbody.appendChild(tr);
+      localStorage.setItem(STORAGE_KEY, docArea.innerHTML);
+    }
+
+    function resetDoc() {
+      if (confirm('현재 서식의 작성 내용을 초기화할까요?')) {
+        localStorage.removeItem(STORAGE_KEY);
+        location.reload();
+      }
+    }
+  </script>
+</body>
+</html>
